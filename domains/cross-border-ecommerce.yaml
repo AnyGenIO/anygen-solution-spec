@@ -1,0 +1,276 @@
+# 跨境电商 — AI 工具说明书
+# AI 读这个文件就知道该用什么工具、怎么配、能干嘛
+
+domain: 跨境电商
+description: 多平台产品上架、订单管理、广告投放、竞品监控、库存管理
+
+tools:
+
+  # ============================================================
+  # 店铺管理
+  # ============================================================
+
+  - name: Shopify CLI
+    id: shopify-cli
+    what: Shopify 官方命令行，管理店铺产品、订单、主题
+    install: npm install -g @shopify/cli
+    auth:
+      required: true
+      method: oauth
+      setup: shopify auth login   # 会打开浏览器登录
+      env_var: SHOPIFY_CLI_PARTNERS_TOKEN  # CI场景用这个
+      how_to_get: "partners.shopify.com → Settings → CLI tokens"
+      verify: shopify auth token
+    capabilities:
+      - 产品CRUD（创建/读取/更新/删除）
+      - 订单查询
+      - 主题开发和部署
+      - App 开发调试
+      - 库存管理（多仓库）
+    when_to_use:
+      - 在Shopify上架/改产品
+      - 批量更新价格或库存
+      - 部署店铺主题
+    limits:
+      - REST API 2次/秒
+      - GraphQL 1000 cost点/秒
+    docs: https://shopify.dev/docs/api/shopify-cli
+
+  - name: Amazon SP-API
+    id: amazon-sp-api
+    what: 亚马逊卖家官方API的Python SDK，管理listing、订单、库存、广告
+    install: pip install python-amazon-sp-api
+    auth:
+      required: true
+      method: oauth (LWA)
+      env_vars:
+        - SP_API_REFRESH_TOKEN    # 卖家授权token
+        - LWA_APP_ID              # App Client ID
+        - LWA_CLIENT_SECRET       # App Client Secret
+        - SP_API_AWS_ACCESS_KEY   # AWS IAM key
+        - SP_API_AWS_SECRET_KEY   # AWS IAM secret
+        - SP_API_ROLE_ARN         # AWS Role ARN
+      how_to_get: |
+        1. sellercentral.amazon.com → 开发者注册
+        2. 创建 App，获取 LWA 凭证
+        3. AWS 控制台创建 IAM 用户和 Role
+        4. 用卖家账号授权 App 获取 Refresh Token
+      verify: "python -c \"from sp_api.api import Orders; print('ok')\""
+    capabilities:
+      - Listing 创建和更新（标题/价格/图片/描述）
+      - 订单查询和发货确认
+      - 库存管理（FBA和FBM）
+      - 广告管理（SP/SB/SD广告）
+      - 财务报表和结算
+      - 产品评价和反馈查询
+      - 类目和关键词查询
+    when_to_use:
+      - 在亚马逊上架/改listing
+      - 查看和处理亚马逊订单
+      - 管理FBA库存和补货
+      - 创建和调整PPC广告
+    limits:
+      - 不同API有不同限流（通常1-5次/秒）
+      - 需要卖家账号是专业卖家
+    docs: https://developer-docs.amazon.com/sp-api/
+
+  - name: TikTok Shop Open API
+    id: tiktok-shop-api
+    what: TikTok小店官方API，管理产品、订单、物流
+    install: pip install tiktok-business-api-sdk-official  # 官方SDK（PyPI）
+    auth:
+      required: true
+      method: oauth
+      env_vars:
+        - TIKTOK_APP_KEY
+        - TIKTOK_APP_SECRET
+        - TIKTOK_ACCESS_TOKEN
+      how_to_get: |
+        1. partner.tiktokshop.com 注册开发者
+        2. 创建 App 获取 App Key/Secret
+        3. 授权店铺获取 Access Token
+      verify: "调用 /api/products/search 返回200"
+    capabilities:
+      - 产品创建和管理
+      - 订单查询和发货
+      - 物流信息上传
+      - 店铺信息管理
+    when_to_use:
+      - 在TikTok Shop上架产品
+      - 处理TikTok订单
+      - TikTok直播带货相关
+    limits:
+      - 日调用配额限制（按App等级）
+      - 部分市场未开放
+    docs: https://partner.tiktokshop.com/docv2
+
+  - name: 速卖通 Open Platform
+    id: aliexpress-api
+    what: 速卖通官方开放平台API
+    install: 无官方Python SDK，直接HTTP API调用（社区SDK: pip install aliexpress-async-api）
+    auth:
+      required: true
+      method: oauth
+      env_vars:
+        - AE_APP_KEY
+        - AE_APP_SECRET
+        - AE_ACCESS_TOKEN
+      how_to_get: |
+        1. open.aliexpress.com 注册开发者
+        2. 创建应用获取 App Key/Secret
+        3. 卖家授权获取 Access Token
+    capabilities:
+      - 产品发布和编辑
+      - 订单管理
+      - 物流发货
+      - 店铺数据
+    when_to_use:
+      - 在速卖通上架产品
+      - 管理速卖通订单
+    limits:
+      - 日调用配额
+    docs: https://openservice.aliexpress.com/doc/api.htm
+
+  # ============================================================
+  # 内容生成
+  # ============================================================
+
+  - name: MoneyPrinterTurbo
+    id: moneyprinter
+    what: 自动生成产品展示/带货短视频，54k stars
+    install: |
+      git clone https://github.com/harry0703/MoneyPrinterTurbo
+      cd MoneyPrinterTurbo && pip install -r requirements.txt
+    auth:
+      required: true
+      method: api_key
+      env_vars:
+        - OPENAI_API_KEY          # 或其他LLM的key，用来生成文案
+        - PEXELS_API_KEY          # 素材图片/视频（免费）
+      how_to_get: |
+        - LLM API key: 你自己的 OpenAI/Claude key
+        - Pexels: pexels.com 注册免费获取
+    capabilities:
+      - 根据产品描述自动生成短视频
+      - 自动配音、字幕、背景音乐
+      - 支持多种视频比例（9:16竖屏、16:9横屏）
+      - 批量生成
+    when_to_use:
+      - 需要给产品做展示视频
+      - TikTok/YouTube/Instagram 内容生产
+      - 批量生成多个产品的视频素材
+    limits:
+      - 视频质量取决于素材质量
+      - 每个视频生成需要几分钟
+    docs: https://github.com/harry0703/MoneyPrinterTurbo
+
+  # ============================================================
+  # 竞品研究
+  # ============================================================
+
+  - name: Lightpanda
+    id: lightpanda
+    what: 轻量级无头浏览器，比Puppeteer快10倍，适合爬竞品页面
+    install: curl -fsSL https://lightpanda.io/install.sh | sh
+    auth:
+      required: false
+    capabilities:
+      - 高速网页抓取
+      - JavaScript渲染
+      - 竞品页面数据提取（价格/评价/排名）
+    when_to_use:
+      - 爬取竞品的产品页面
+      - 监控竞品价格变化
+      - 批量采集市场数据
+    limits:
+      - 需要遵守目标网站robots.txt
+      - 频率太高可能被封IP
+    docs: https://lightpanda.io/docs
+
+  - name: Helium 10
+    id: helium10
+    what: Amazon选品和关键词研究工具（付费），无公开API
+    install: Chrome扩展 + Web界面（helium10.com）
+    auth:
+      required: true
+      method: 账号登录（无公开API key）
+      how_to_get: "helium10.com 注册订阅"
+      pricing: "Platinum $99/月, Diamond $279/月
+    capabilities:
+      - Amazon关键词搜索量和趋势
+      - 竞品销量估算
+      - Listing优化评分
+      - 利润计算器
+      - 产品趋势追踪
+    when_to_use:
+      - 选品阶段：评估产品市场容量
+      - 优化Listing关键词
+      - 分析竞品销量和策略
+    limits:
+      - 付费工具
+      - API调用有配额
+      - 仅支持Amazon平台
+    docs: https://docs.helium10.com
+
+  - name: Jungle Scout API
+    id: junglescout
+    what: Amazon选品和市场研究工具（付费），API需联系销售开通
+    install: 无CLI，HTTP API调用（需企业级订阅）
+    auth:
+      required: true
+      method: api_key
+      env_vars:
+        - JUNGLESCOUT_API_KEY
+        - JUNGLESCOUT_KEY_NAME
+      how_to_get: "junglescout.com → 联系销售获取API权限（非自助开通）"
+      pricing: "需定制报价，面向企业客户
+    capabilities:
+      - 产品数据库搜索（按类目/销量/价格筛选）
+      - 关键词搜索量和竞争度
+      - 销量历史趋势
+      - 供应商数据库
+      - 利基市场评分
+    when_to_use:
+      - 选品调研：找有潜力的产品
+      - 评估市场竞争程度
+      - 分析关键词机会
+    limits:
+      - 付费工具
+      - 仅支持Amazon
+    docs: https://developer.junglescout.com
+
+# ============================================================
+# 行业常识（AI做决策时需要知道的）
+# ============================================================
+
+domain_knowledge:
+  terminology:
+    ASIN: Amazon产品唯一ID
+    BSR: 畅销排名
+    FBA: 亚马逊代发货
+    FBM: 卖家自发货
+    ACOS: 广告花费/广告销售额
+    Listing: 产品详情页
+    Buy Box: 购物车竞争
+    SKU: 库存编号
+
+  rules:
+    - Amazon标题不超过200字符
+    - Amazon主图必须纯白底，1000x1000px以上
+    - Amazon不允许其他平台卖更低价
+    - 多平台卖必须实时同步库存，否则超卖会被处罚
+    - TikTok Shop标题建议30-80字符
+    - 速卖通标题上限128字符
+
+  typical_workflows:
+    - name: 新品上架
+      steps: 准备资料 → Shopify建品 → 同步Amazon → 同步TikTok → 生成视频 → 设库存同步
+      tools: [shopify-cli, amazon-sp-api, tiktok-shop-api, moneyprinter]
+
+    - name: 竞品监控
+      steps: 爬竞品页面 → 提取数据 → 对比分析 → 生成报告
+      tools: [lightpanda, helium10]
+
+    - name: 广告优化
+      steps: 拉广告数据 → 分析ACOS → 调整bid → 暂停差词 → 加新词
+      tools: [amazon-sp-api, helium10]

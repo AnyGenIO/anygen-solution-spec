@@ -1,0 +1,200 @@
+# ============================================================
+# Layer 2: Tool Spec — 单个工具的完整说明书
+# 告诉 AI 这个工具具体怎么用
+# ============================================================
+
+tool_id: shopify-cli
+name: Shopify CLI
+version_spec: "1.0"                  # 说明书版本
+tool_version: "3.x"                  # 工具版本
+
+# ---- 安装 ----
+setup:
+  prerequisites:
+    - name: Node.js
+      version: ">=18"
+      check: "node --version"
+    - name: npm
+      check: "npm --version"
+      
+  install:
+    command: "npm install -g @shopify/cli @shopify/app"
+    verify: "shopify version"
+    
+  auth:
+    method: oauth
+    steps:
+      - description: "登录 Shopify Partner 账号"
+        command: "shopify auth login"
+        interactive: true             # 会打开浏览器
+        env_vars: []
+      - description: "或通过环境变量（CI/CD 场景）"
+        env_vars:
+          - name: SHOPIFY_CLI_PARTNERS_TOKEN
+            description: "Partners API token"
+            how_to_get: "登录 partners.shopify.com → Settings → CLI tokens → Create token"
+            required: true
+    
+    verify:
+      command: "shopify auth token"
+      success_pattern: "shpat_.*"
+
+# ---- 能力清单 ----
+capabilities:
+  - id: list-products
+    name: 查看产品列表
+    description: 获取店铺中所有产品
+    category: product-read
+    command:
+      template: "shopify product list --store {store_name}"
+      params:
+        - name: store_name
+          type: string
+          required: true
+          description: "店铺域名，如 my-store.myshopify.com"
+          example: "cool-gadgets.myshopify.com"
+    output:
+      format: table                   # table | json | csv
+      json_flag: "--json"             # 加这个参数输出 JSON
+      fields:
+        - name: id
+          type: string
+          description: "产品 ID"
+        - name: title
+          type: string
+          description: "产品标题"
+        - name: status
+          type: enum
+          values: [active, draft, archived]
+        - name: variants_count
+          type: integer
+      
+  - id: create-product
+    name: 创建新产品
+    description: 在 Shopify 店铺中创建一个新产品
+    category: product-write
+    command:
+      # CLI 不直接支持，走 GraphQL
+      method: graphql
+      endpoint: "shopify app function run"
+      alternative: "通过 Shopify Admin API REST/GraphQL"
+      graphql_mutation: |
+        mutation productCreate($input: ProductInput!) {
+          productCreate(input: $input) {
+            product {
+              id
+              title
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }
+      params:
+        - name: title
+          type: string
+          required: true
+          description: "产品标题"
+          max_length: 255
+        - name: body_html
+          type: string
+          required: false
+          description: "产品描述（HTML格式）"
+        - name: vendor
+          type: string
+          required: false
+          description: "品牌/供应商"
+        - name: product_type
+          type: string
+          required: false
+          description: "产品类型"
+        - name: tags
+          type: array
+          items: string
+          required: false
+          description: "标签列表"
+        - name: variants
+          type: array
+          required: true
+          description: "变体列表（至少一个）"
+          items:
+            type: object
+            properties:
+              - name: price
+                type: decimal
+                required: true
+              - name: sku
+                type: string
+                required: false
+              - name: inventory_quantity
+                type: integer
+                required: false
+        - name: images
+          type: array
+          items:
+            type: object
+            properties:
+              - name: src
+                type: url
+                description: "图片URL"
+    output:
+      success_indicator: "product.id is not null"
+      error_field: "userErrors"
+      
+  - id: update-inventory
+    name: 更新库存
+    description: 更新指定 SKU 的库存数量
+    category: inventory-write
+    command:
+      method: rest_api
+      endpoint: "POST /admin/api/2024-01/inventory_levels/set.json"
+      params:
+        - name: inventory_item_id
+          type: integer
+          required: true
+          description: "库存项 ID"
+        - name: location_id
+          type: integer
+          required: true
+          description: "仓库位置 ID"
+        - name: available
+          type: integer
+          required: true
+          description: "可用库存数量"
+
+# ---- 限流/配额 ----
+rate_limits:
+  - scope: rest_api
+    limit: "2 requests/second per store"
+    strategy: "leaky bucket"
+    retry_header: "Retry-After"
+  - scope: graphql
+    limit: "1000 cost points/second"
+    strategy: "calculated query cost"
+
+# ---- 常见错误 ----
+common_errors:
+  - code: 401
+    meaning: "Token 过期或权限不足"
+    fix: "重新运行 shopify auth login"
+  - code: 429
+    meaning: "触发限流"
+    fix: "等待 Retry-After 秒后重试"
+  - code: 422
+    meaning: "参数校验失败"
+    fix: "检查 userErrors 字段，常见：标题为空、价格负数、SKU重复"
+
+# ---- 与其他工具的关系 ----
+integrations:
+  - tool_id: amazon-sp-api
+    relation: "同类（都是电商平台管理）"
+    data_mapping:
+      - from: shopify.product.title
+        to: amazon.listing.item_name
+      - from: shopify.product.body_html
+        to: amazon.listing.product_description
+      - from: shopify.variant.price
+        to: amazon.listing.standard_price
+      - from: shopify.variant.sku
+        to: amazon.listing.seller_sku

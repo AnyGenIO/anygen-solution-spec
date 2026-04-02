@@ -1,0 +1,259 @@
+# 客服运营 — AI 工具说明书
+
+domain: 客服运营
+description: 工单处理、客户沟通、退款退货、物流查询、知识库管理
+
+tools:
+
+  - name: Twilio CLI
+    id: twilio-cli
+    what: 电话/短信/WhatsApp通讯平台，官方CLI
+    install: npm install -g twilio-cli
+    auth:
+      required: true
+      method: api_key
+      setup: twilio login
+      env_vars:
+        - TWILIO_ACCOUNT_SID
+        - TWILIO_AUTH_TOKEN
+      how_to_get: "twilio.com → Console 首页直接显示"
+      verify: twilio api:core:accounts:fetch
+    capabilities:
+      - 发短信/彩信
+      - 拨打/接听电话
+      - WhatsApp消息
+      - IVR语音导航
+      - 通话录音
+      - 号码管理
+    when_to_use:
+      - 客服主动联系客户（电话/短信）
+      - 搭建自动IVR（按1转人工按2查订单）
+      - WhatsApp客服通道
+    limits:
+      - 按用量计费
+    docs: https://www.twilio.com/docs/twilio-cli
+
+  - name: Zendesk API
+    id: zendesk-api
+    what: 工单系统API，无官方CLI，REST API成熟
+    install: pip install zenpy   # 社区Python SDK
+    auth:
+      required: true
+      method: api_key
+      env_vars:
+        - ZENDESK_SUBDOMAIN      # yourcompany.zendesk.com
+        - ZENDESK_EMAIL          # 管理员邮箱
+        - ZENDESK_API_TOKEN      # API令牌
+      how_to_get: "Zendesk Admin → Channels → API → 创建Token"
+      verify: "curl https://$ZENDESK_SUBDOMAIN.zendesk.com/api/v2/users/me -u $ZENDESK_EMAIL/token:$ZENDESK_API_TOKEN"
+    capabilities:
+      - 工单CRUD（创建/查询/更新/关闭）
+      - 工单分配和转派
+      - 宏/自动化规则
+      - 客户信息管理
+      - 满意度调查
+      - 知识库(Help Center)管理
+      - SLA监控
+      - 报表和分析
+    when_to_use:
+      - 处理客户工单
+      - 自动分类和路由工单
+      - 查看工单积压和SLA达标率
+      - 更新知识库文章
+    limits:
+      - API限流 400次/分钟（企业版700）
+      - 按坐席收费 $19-115/坐席/月
+    docs: https://developer.zendesk.com/api-reference/
+
+  - name: Intercom API
+    id: intercom-api
+    what: 在线客服和用户沟通平台API，已支持官方MCP
+    install: 无CLI，HTTP API / 官方MCP Server (developers.intercom.com/docs/guides/mcp)
+    auth:
+      required: true
+      method: token
+      env_vars:
+        - INTERCOM_ACCESS_TOKEN
+      how_to_get: "Intercom → Settings → Integrations → Developer Hub → 创建App获取Token"
+      verify: "curl -H 'Authorization: Bearer $INTERCOM_ACCESS_TOKEN' https://api.intercom.io/me"
+    capabilities:
+      - 对话管理（回复/关闭/分配）
+      - 用户和公司数据
+      - 自定义机器人(Bot)
+      - 文章/帮助中心管理
+      - 事件跟踪
+      - 标签和分群
+    when_to_use:
+      - 网页/App内嵌客服对话
+      - 主动消息推送
+      - 自动化客服Bot
+    limits:
+      - 按坐席+联系人数收费
+      - API限流 1000次/分钟
+    docs: https://developers.intercom.com/docs/references/rest-api/api.intercom.io/
+
+  - name: Freshdesk API
+    id: freshdesk-api
+    what: 工单系统API，Zendesk替代品，中小企业友好
+    install: 无CLI，HTTP API调用
+    auth:
+      required: true
+      method: api_key
+      env_vars:
+        - FRESHDESK_DOMAIN        # yourcompany.freshdesk.com
+        - FRESHDESK_API_KEY       # 个人API Key
+      how_to_get: "Freshdesk → 个人头像 → Profile Settings → API Key"
+      verify: "curl -u $FRESHDESK_API_KEY:X https://$FRESHDESK_DOMAIN.freshdesk.com/api/v2/tickets?per_page=1"
+    capabilities:
+      - 工单CRUD
+      - 自动分配规则
+      - SLA策略
+      - 客户管理
+      - 知识库
+      - 满意度评分
+    when_to_use:
+      - 中小企业工单管理
+      - Zendesk的平价替代
+    limits:
+      - 免费版支持10坐席
+      - API限流按版本不同
+    docs: https://developers.freshdesk.com/api/
+
+  - name: Shopify API (订单/退款)
+    id: shopify-support
+    what: Shopify Admin API，客服场景用订单和退款相关接口
+    install: pip install shopifyapi  # 或用shopify-cli
+    auth:
+      required: true
+      method: token
+      env_vars:
+        - SHOPIFY_ACCESS_TOKEN
+        - SHOPIFY_STORE_URL       # my-store.myshopify.com
+      how_to_get: "Shopify Admin → Settings → Apps → Develop apps → 创建Custom App"
+    capabilities:
+      - 订单查询（按客户/日期/状态）
+      - 退款处理
+      - 订单备注更新
+      - 取消订单
+      - 发货状态更新
+      - 客户信息查询
+    when_to_use:
+      - 客户询问订单状态
+      - 处理退款请求
+      - 修改/取消订单
+    limits:
+      - REST API 2次/秒
+    docs: https://shopify.dev/docs/api/admin-rest
+
+  - name: 快递100 API (百递云)
+    id: kuaidi100
+    what: 快递物流查询API，覆盖全球3000+物流服务商，已推出MCP Server
+    install: pip install kuaidi100-api  # 或 MCP Server: github.com/kuaidi100-api/kuaidi100-MCP
+    auth:
+      required: true
+      method: api_key
+      env_vars:
+        - KUAIDI100_KEY           # 授权key
+        - KUAIDI100_CUSTOMER      # customer编号
+      how_to_get: "kuaidi100.com → 申请接口 → 获取key和customer"
+      pricing: "免费100次/天，付费按量"
+    capabilities:
+      - 快递单号查询（实时物流轨迹）
+      - 自动识别快递公司
+      - 物流推送订阅
+      - 电子面单打印
+    when_to_use:
+      - 客户问包裹到哪了
+      - 批量查物流状态
+      - 物流异常监控
+    limits:
+      - 免费额度有限
+      - 国际快递支持不如国内全
+    docs: https://www.kuaidi100.com/openapi/
+
+  - name: EasyPost API
+    id: easypost
+    what: 国际快递聚合API，比价+下单+追踪
+    install: pip install easypost
+    auth:
+      required: true
+      method: api_key
+      env_vars:
+        - EASYPOST_API_KEY
+      how_to_get: "easypost.com 注册获取测试/生产key"
+      pricing: "按单计费，有免费测试模式"
+    capabilities:
+      - 多快递公司比价（UPS/FedEx/DHL/USPS等）
+      - 创建运单
+      - 物流追踪
+      - 地址验证
+      - 保险购买
+    when_to_use:
+      - 跨境物流查询和比价
+      - 国际包裹追踪
+      - 批量创建运单
+    limits:
+      - 主要覆盖美国和国际
+      - 中国境内不如快递100
+    docs: https://www.easypost.com/docs/api
+
+  - name: 飞书客服 / 企业微信客服 API
+    id: feishu-wecom-support
+    what: 国内企业IM平台的客服接口
+    install: pip install lark-oapi  # 飞书 / pip install wechatpy  # 企微
+    auth:
+      required: true
+      method: api_key
+      env_vars_feishu:
+        - FEISHU_APP_ID
+        - FEISHU_APP_SECRET
+      env_vars_wecom:
+        - WECOM_CORP_ID
+        - WECOM_CORP_SECRET
+      how_to_get: |
+        飞书: open.feishu.cn 创建自建应用
+        企微: work.weixin.qq.com → 应用管理 → 创建应用
+    capabilities:
+      - 接收和回复客户消息
+      - 客服会话分配
+      - 消息卡片（按钮/表单）
+      - 客户满意度
+    when_to_use:
+      - 客户通过飞书/企微咨询
+      - 国内B2B客户服务
+    limits:
+      - 需要企业管理员授权
+    docs: |
+      飞书: https://open.feishu.cn/document/server-docs/im-v1/message/create
+      企微: https://developer.work.weixin.qq.com/document/
+
+domain_knowledge:
+  terminology:
+    SLA: Service Level Agreement，服务等级协议（如首响<2小时，解决<24小时）
+    FRT: First Response Time，首次响应时间
+    CSAT: Customer Satisfaction Score，客户满意度
+    NPS: Net Promoter Score，净推荐值
+    Ticket: 工单
+    Escalation: 升级/转派
+    Macro: 宏（预设回复模板）
+    Backlog: 工单积压
+
+  rules:
+    - 首次响应时间越短，客户满意度越高（目标<2小时）
+    - 退款审批需要权限确认，AI不能自动执行大额退款
+    - 物流问题先查快递状态再回复客户，避免空口承诺
+    - 工单关闭前必须确认客户问题已解决
+    - 敏感信息（订单号/手机号/地址）不要在不安全渠道传输
+
+  typical_workflows:
+    - name: 普通咨询
+      steps: 收到工单 → 分类 → 查知识库 → 回复 → 确认解决 → 关闭
+      tools: [zendesk-api, intercom-api]
+
+    - name: 退款处理
+      steps: 收到退款请求 → 查订单 → 确认符合政策 → 执行退款 → 通知客户
+      tools: [zendesk-api, shopify-support]
+
+    - name: 物流查询
+      steps: 客户问物流 → 查快递单号 → 获取轨迹 → 回复客户
+      tools: [kuaidi100, easypost, shopify-support]

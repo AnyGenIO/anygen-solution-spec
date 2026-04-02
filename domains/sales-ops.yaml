@@ -1,0 +1,334 @@
+# 销售运营（SalesOps/RevOps）— AI 工具说明书
+
+domain: 销售运营
+description: SDR线索拓展、AE跟单成交、RevOps数据分析，覆盖找人→触达→跟进→签约全链路
+
+tools:
+
+  # ============================================================
+  # CRM 平台
+  # ============================================================
+
+  - name: Salesforce CLI (sf)
+    id: salesforce-cli
+    what: Salesforce 官方命令行，管理org/数据/部署，业务操作走REST API
+    install: npm install -g @salesforce/cli
+    auth:
+      required: true
+      method: oauth
+      setup: sf org login web   # 浏览器授权
+      env_vars:
+        - SF_ACCESS_TOKEN       # CI场景
+        - SF_INSTANCE_URL       # 如 https://yourorg.my.salesforce.com
+      how_to_get: "Setup → Apps → Connected Apps → 创建OAuth App"
+      verify: sf org list
+    capabilities:
+      - SOQL 查询（Lead/Contact/Opportunity/Account 全表）
+      - 记录CRUD（创建/更新Lead、推进Opportunity Stage）
+      - 报表导出
+      - 数据批量导入导出（Bulk API）
+      - 自动化部署（Flow/Apex/LWC）
+      - 元数据管理
+    when_to_use:
+      - 查询/更新CRM中的线索、商机、客户
+      - 批量导入线索
+      - 推进商机阶段（Stage）
+      - 拉漏斗报表和预测
+    limits:
+      - API调用日限额（按版本，Enterprise版10万次/天）
+      - Bulk API单批1万条
+    docs: https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/
+
+  - name: HubSpot CLI
+    id: hubspot-cli
+    what: HubSpot 官方命令行，偏开发，业务数据走REST API
+    install: npm install -g @hubspot/cli
+    auth:
+      required: true
+      method: api_key / oauth
+      env_vars:
+        - HUBSPOT_ACCESS_TOKEN    # Private App Token（推荐）
+      how_to_get: "HubSpot → Settings → Integrations → Private Apps → Create"
+      verify: "curl -H 'Authorization: Bearer $HUBSPOT_ACCESS_TOKEN' https://api.hubapi.com/crm/v3/objects/contacts?limit=1"
+    capabilities:
+      - 联系人/公司/交易 CRUD
+      - 管道(Pipeline)和阶段管理
+      - 邮件跟踪和序列
+      - 表单和落地页管理
+      - 报表和仪表盘
+      - 工作流自动化
+    when_to_use:
+      - 中小企业CRM操作
+      - 创建/更新联系人和交易
+      - 查看销售管道
+      - 营销自动化
+    limits:
+      - 免费版功能受限
+      - API限流 100次/10秒（Private App）
+    docs: https://developers.hubspot.com/docs/api/overview
+
+  # ============================================================
+  # 通讯触达
+  # ============================================================
+
+  - name: Twilio CLI
+    id: twilio-cli
+    what: Twilio 官方CLI，打电话、发短信、管号码，最像真正的CLI工具
+    install: npm install -g twilio-cli
+    auth:
+      required: true
+      method: api_key
+      setup: twilio login    # 交互式输入SID和Token
+      env_vars:
+        - TWILIO_ACCOUNT_SID
+        - TWILIO_AUTH_TOKEN
+      how_to_get: "twilio.com → Console → Account SID 和 Auth Token 在首页"
+      verify: twilio api:core:accounts:fetch
+    capabilities:
+      - 发送短信/彩信
+      - 拨打电话（可接TTS或录音）
+      - 购买和管理电话号码
+      - 查看通话/短信记录
+      - WhatsApp消息发送
+      - 号码路由配置
+    when_to_use:
+      - SDR批量短信触达
+      - 自动拨打跟进电话
+      - 设置电话转接/IVR
+      - 发送WhatsApp消息
+    limits:
+      - 按用量计费（短信$0.0079/条，通话$0.014/分钟起）
+      - 需要购买号码（$1-2/月/号码）
+      - 批量短信需要注册Campaign
+    docs: https://www.twilio.com/docs/twilio-cli
+
+  # ============================================================
+  # 线索获取
+  # ============================================================
+
+  - name: Apollo.io API
+    id: apollo-api
+    what: SDR找人利器，2.75亿联系人数据库，找邮箱/电话/公司信息
+    install: 无CLI，HTTP API调用
+    auth:
+      required: true
+      method: api_key
+      env_vars:
+        - APOLLO_API_KEY
+      how_to_get: "app.apollo.io → Settings → Integrations → API Keys"
+      pricing: "Free版 / Basic $49/用户/月 / Professional $79/用户/月 / Organization $119/用户/月"
+    capabilities:
+      - 按公司/职位/行业/地区搜索联系人
+      - 获取邮箱和电话号码
+      - 公司信息查询（规模/融资/技术栈）
+      - 邮箱验证
+      - 联系人列表管理
+      - 序列化邮件发送
+    when_to_use:
+      - 找目标客户的联系方式
+      - 批量获取某行业/职位的联系人
+      - 验证邮箱有效性
+      - 建立外呼名单
+    limits:
+      - 免费版额度很少
+      - 数据准确率约85-90%
+    docs: https://apolloio.github.io/apollo-api-docs/
+
+  # ============================================================
+  # 序列化触达
+  # ============================================================
+
+  - name: Outreach API
+    id: outreach-api
+    what: 销售自动化平台API，序列化邮件/电话/LinkedIn触达
+    install: 无CLI，HTTP API调用
+    auth:
+      required: true
+      method: oauth
+      env_vars:
+        - OUTREACH_CLIENT_ID
+        - OUTREACH_CLIENT_SECRET
+        - OUTREACH_ACCESS_TOKEN
+      how_to_get: "app.outreach.io → Settings → API → OAuth Applications"
+      pricing: 起步$100/用户/月（需联系销售）
+    capabilities:
+      - 创建和管理触达序列（Sequence）
+      - 邮件模板管理
+      - 任务分配和跟进提醒
+      - 通话记录和分析
+      - 与CRM双向同步
+      - 邮件打开/点击追踪
+    when_to_use:
+      - 设计多步骤触达序列（Day1邮件→Day3跟进→Day7电话）
+      - 批量个性化邮件发送
+      - 跟踪触达效果
+    limits:
+      - 付费工具，价格较高
+      - API限流 10,000次/小时/用户
+    docs: https://api.outreach.io/api/v2/docs
+
+  - name: Salesloft API
+    id: salesloft-api
+    what: Outreach的竞品，功能类似，序列化销售触达
+    install: 无CLI，HTTP API调用
+    auth:
+      required: true
+      method: oauth
+      env_vars:
+        - SALESLOFT_API_KEY
+      how_to_get: "app.salesloft.com → Settings → API → Generate Key"
+      pricing: 需联系销售
+    capabilities:
+      - 节奏(Cadence)管理——多步骤触达序列
+      - 邮件发送和追踪
+      - 通话拨号器
+      - CRM同步
+      - 分析和报表
+    when_to_use:
+      - 与Outreach二选一，功能类似
+      - 企业已用Salesloft时
+    limits:
+      - API限流 600次/分钟
+    docs: https://developers.salesloft.com/docs/api/
+
+  # ============================================================
+  # 合同签署
+  # ============================================================
+
+  - name: DocuSign SDK
+    id: docusign-sdk
+    what: 电子签名平台SDK，发送合同/收集签名（无官方CLI）
+    install: pip install docusign-esign  # Python / npm install docusign-esign  # Node.js
+    auth:
+      required: true
+      method: oauth (JWT)
+      env_vars:
+        - DOCUSIGN_INTEGRATION_KEY
+        - DOCUSIGN_USER_ID
+        - DOCUSIGN_ACCOUNT_ID
+        - DOCUSIGN_PRIVATE_KEY_PATH
+      how_to_get: |
+        1. developers.docusign.com 创建App
+        2. 获取 Integration Key
+        3. 生成 RSA 密钥对
+        4. 管理员同意授权
+      verify: "python -c \"import docusign_esign; print('ok')\""
+    capabilities:
+      - 发送签署请求（Envelope）
+      - 模板管理
+      - 签署状态查询
+      - 已签文档下载
+      - 批量发送
+    when_to_use:
+      - AE发合同给客户签署
+      - 跟踪合同签署进度
+      - 签署完成后归档
+    limits:
+      - 免费版每月5个Envelope
+      - 付费$10-60/用户/月
+    docs: https://developers.docusign.com/docs/esign-rest-api/
+
+  # ============================================================
+  # 支付/账单
+  # ============================================================
+
+  - name: Stripe CLI
+    id: stripe-cli
+    what: Stripe 官方CLI，管理支付、订阅、发票
+    install: |
+      # macOS
+      brew install stripe/stripe-cli/stripe
+      # Linux
+      curl -s https://packages.stripe.dev/api/security/keypair/stripe-cli-gpg/public | gpg --dearmor | sudo tee /usr/share/keyrings/stripe.gpg
+    auth:
+      required: true
+      method: api_key
+      setup: stripe login    # 浏览器授权
+      env_vars:
+        - STRIPE_API_KEY     # sk_live_xxx 或 sk_test_xxx
+      how_to_get: "dashboard.stripe.com → Developers → API keys"
+      verify: stripe config --list
+    capabilities:
+      - 创建和管理客户(Customer)
+      - 创建支付链接(Payment Link)
+      - 发送发票(Invoice)
+      - 订阅管理(Subscription)
+      - 查看支付记录
+      - Webhook监听和调试
+      - 报价单(Quote)生成
+    when_to_use:
+      - 给客户发账单/发票
+      - 设置订阅收费
+      - 生成报价→合同→收费联动
+      - 调试支付集成
+    limits:
+      - 交易手续费2.9%+$0.30
+      - 免费使用API
+    docs: https://stripe.com/docs/stripe-cli
+
+  # ============================================================
+  # 协作/任务
+  # ============================================================
+
+  - name: 飞书 OpenAPI
+    id: feishu-api
+    what: 飞书开放平台API，消息/日历/文档/审批
+    install: pip install lark-oapi   # 官方Python SDK
+    auth:
+      required: true
+      method: api_key
+      env_vars:
+        - FEISHU_APP_ID
+        - FEISHU_APP_SECRET
+      how_to_get: "open.feishu.cn → 创建企业自建应用 → 获取App ID和Secret"
+      verify: "获取 tenant_access_token 成功即可"
+    capabilities:
+      - 发消息（文本/卡片/富文本）
+      - 日历事件管理
+      - 文档/表格读写
+      - 审批流发起和查询
+      - 通讯录查询
+      - 任务创建和分配
+    when_to_use:
+      - 给销售团队派任务/发通知
+      - 创建审批流（报价审批、合同审批）
+      - 在飞书群里推送销售数据
+      - 会议纪要自动写入文档
+    limits:
+      - 需要企业管理员授权
+      - API限流按应用级别
+    docs: https://open.feishu.cn/document/server-docs/overview
+
+domain_knowledge:
+  terminology:
+    SDR: Sales Development Representative，负责线索挖掘和初步触达
+    AE: Account Executive，负责跟单成交
+    RevOps: Revenue Operations，收入运营（数据/流程/工具）
+    MQL: Marketing Qualified Lead，市场合格线索
+    SQL: Sales Qualified Lead，销售合格线索
+    Pipeline: 销售管道/漏斗
+    Stage: 商机阶段（如Discovery→Demo→Proposal→Negotiation→Closed Won）
+    ARR: Annual Recurring Revenue，年度经常性收入
+    Cadence/Sequence: 序列化触达（多步骤自动跟进）
+    Win Rate: 成单率
+    ASP: Average Selling Price，平均客单价
+
+  rules:
+    - 冷邮件第一封不要超过150字，要有明确CTA
+    - 序列触达一般7-12步，跨2-3周
+    - CRM数据必须及时更新Stage，否则漏斗预测失真
+    - GDPR/CAN-SPAM要求邮件必须有退订链接
+    - 电话外呼注意当地法规（美国TCPA、中国反电诈法）
+
+  typical_workflows:
+    - name: SDR线索拓展
+      steps: Apollo找人 → 建名单 → Outreach序列触达 → 有回复转AE → 更新CRM
+      tools: [apollo-api, outreach-api, salesforce-cli]
+
+    - name: AE跟单签约
+      steps: 收到SQL → CRM建商机 → Demo → 发报价 → 发合同(DocuSign) → Stripe收款 → Closed Won
+      tools: [salesforce-cli, docusign-sdk, stripe-cli]
+
+    - name: RevOps漏斗分析
+      steps: CRM拉数据 → 计算各Stage转化率 → 生成报表 → 飞书/Slack推送
+      tools: [salesforce-cli, feishu-api]

@@ -1,0 +1,114 @@
+# ============================================================
+# Layer 1: Registry — 工具注册表
+# 告诉 AI 这个行业有哪些工具可用
+# ============================================================
+
+domain: cross-border-ecommerce
+description: 跨境电商运营工具生态
+version: "1.0"
+
+# 工具分类
+categories:
+  - id: storefront
+    name: 店铺/平台管理
+    description: 各电商平台的产品上架、订单处理、店铺配置
+    
+  - id: product-content
+    name: 产品内容生成
+    description: 产品图片、视频、文案的生成和优化
+    
+  - id: competitor-intel
+    name: 竞品情报
+    description: 竞品价格、排名、评价监控
+    
+  - id: advertising
+    name: 广告投放
+    description: 各平台站内广告管理
+    
+  - id: inventory
+    name: 库存/供应链
+    description: 库存预警、补货、物流跟踪
+
+# 工具索引
+tools:
+  - id: shopify-cli
+    name: Shopify CLI
+    category: storefront
+    type: cli                        # cli | sdk | api | scraper
+    official: true                   # 官方出品？
+    maturity: production             # experimental | beta | production
+    pricing: free                    # free | freemium | paid
+    install: "npm install -g @shopify/cli"
+    auth_method: oauth               # oauth | api_key | token | cookie
+    spec_file: tools/shopify-cli.yaml
+    platforms: [shopify]
+    
+  - id: amazon-sp-api
+    name: Amazon SP-API (Python SDK)
+    category: storefront
+    type: sdk
+    official: true
+    maturity: production
+    pricing: free
+    install: "pip install python-amazon-sp-api"
+    auth_method: oauth               # LWA (Login with Amazon)
+    spec_file: tools/amazon-sp-api.yaml
+    platforms: [amazon]
+    
+  - id: tiktok-shop-api
+    name: TikTok Shop Open API
+    category: storefront
+    type: api
+    official: true
+    maturity: beta
+    pricing: free
+    auth_method: oauth
+    spec_file: tools/tiktok-shop-api.yaml
+    platforms: [tiktok]
+    
+  - id: aliexpress-api
+    name: 速卖通 Open Platform API
+    category: storefront
+    type: api
+    official: true
+    maturity: production
+    pricing: free
+    auth_method: api_key
+    spec_file: tools/aliexpress-api.yaml
+    platforms: [aliexpress]
+    
+  - id: moneyprinter-turbo
+    name: MoneyPrinterTurbo
+    category: product-content
+    type: cli
+    official: false
+    maturity: production
+    pricing: free
+    install: "git clone https://github.com/harry0703/MoneyPrinterTurbo"
+    auth_method: api_key             # 需要配置 LLM API key
+    spec_file: tools/moneyprinter.yaml
+    github_stars: 54000
+    platforms: [all]                  # 平台无关
+    
+  - id: lightpanda
+    name: Lightpanda
+    category: competitor-intel
+    type: cli
+    official: false
+    maturity: beta
+    pricing: free
+    install: "curl -fsSL https://lightpanda.io/install.sh | sh"
+    auth_method: none
+    spec_file: tools/lightpanda.yaml
+    platforms: [all]
+
+  - id: helium10-api
+    name: Helium 10 API
+    category: competitor-intel
+    type: api
+    official: true
+    maturity: production
+    pricing: paid                    # $39-$279/月
+    auth_method: api_key
+    spec_file: tools/helium10.yaml
+    platforms: [amazon]

@@ -1,0 +1,234 @@
+# 广告投放运营 — AI 工具说明书
+
+domain: 广告投放
+description: Google/Meta/TikTok/Microsoft 多平台广告创建、优化、报表，覆盖搜索广告、社交广告、展示广告
+
+tools:
+
+  - name: Google Ads API (Python SDK)
+    id: google-ads-api
+    what: Google Ads 官方Python SDK，管理搜索/展示/购物/视频广告
+    install: pip install google-ads
+    auth:
+      required: true
+      method: oauth
+      env_vars:
+        - GOOGLE_ADS_DEVELOPER_TOKEN    # 开发者令牌
+        - GOOGLE_ADS_CLIENT_ID          # OAuth Client ID
+        - GOOGLE_ADS_CLIENT_SECRET      # OAuth Client Secret
+        - GOOGLE_ADS_REFRESH_TOKEN      # OAuth Refresh Token
+        - GOOGLE_ADS_LOGIN_CUSTOMER_ID  # MCC账户ID（如果用MCC）
+      how_to_get: |
+        1. developers.google.com/google-ads/api 申请开发者令牌
+        2. console.cloud.google.com 创建OAuth凭证
+        3. 用oauth2l工具获取Refresh Token
+        4. 需等Google审批开发者令牌（可能要几天）
+      verify: "python -c \"from google.ads.googleads.client import GoogleAdsClient; print('ok')\""
+    capabilities:
+      - Campaign/Ad Group/Ad 创建和管理
+      - 关键词管理（添加/暂停/调bid）
+      - 预算设置和调整
+      - 报表查询（GAQL语言）
+      - 转化跟踪配置
+      - 受众管理
+      - 购物广告(Shopping)管理
+      - 效果最大化(PMax)广告
+    when_to_use:
+      - 管理Google搜索广告
+      - 调整关键词出价
+      - 拉广告效果报表（花费/点击/转化/ROAS）
+      - 批量创建/暂停广告
+    limits:
+      - 开发者令牌审批流程较慢
+      - API调用日限额（基础级1万次/天）
+      - 报表数据有2-3小时延迟
+    docs: https://developers.google.com/google-ads/api/docs/start
+
+  - name: Meta Marketing API
+    id: meta-marketing-api
+    what: Facebook/Instagram 广告官方API（Python SDK）
+    install: pip install facebook-business
+    auth:
+      required: true
+      method: token
+      env_vars:
+        - META_APP_ID
+        - META_APP_SECRET
+        - META_ACCESS_TOKEN       # 长期用户令牌或系统用户令牌
+        - META_AD_ACCOUNT_ID      # act_XXXXXXX
+      how_to_get: |
+        1. developers.facebook.com 创建App
+        2. 添加Marketing API产品
+        3. 创建系统用户(System User)获取长期令牌
+        4. 授予广告账户权限
+      verify: "curl 'https://graph.facebook.com/v19.0/me?access_token=$META_ACCESS_TOKEN'"
+    capabilities:
+      - Campaign/Ad Set/Ad 创建和管理
+      - 受众定向（兴趣/行为/自定义受众/Lookalike）
+      - 素材管理（图片/视频/轮播）
+      - 效果报表（按天/按素材/按受众维度）
+      - A/B测试
+      - 自动规则（如CPA超标自动暂停）
+      - 产品目录广告(DPA)
+    when_to_use:
+      - Facebook/Instagram广告投放
+      - 社交广告素材测试
+      - 受众分析和Lookalike创建
+      - 拉广告效果数据
+    limits:
+      - 令牌过期问题（用系统用户令牌解决）
+      - API版本每年淘汰旧版
+      - 限流 200次/小时/广告账户
+    docs: https://developers.facebook.com/docs/marketing-apis/
+
+  - name: TikTok Ads API
+    id: tiktok-ads-api
+    what: TikTok 广告官方API SDK
+    install: pip install tiktok-business-api-sdk-official  # 官方PyPI包
+    auth:
+      required: true
+      method: token
+      env_vars:
+        - TIKTOK_ADS_APP_ID
+        - TIKTOK_ADS_SECRET
+        - TIKTOK_ADS_ACCESS_TOKEN
+      how_to_get: |
+        1. business-api.tiktok.com 注册开发者
+        2. 创建App获取凭证
+        3. 授权广告主账户获取Access Token
+      verify: "调用 /open_api/v1.3/advertiser/info/ 返回200"
+    capabilities:
+      - Campaign/Ad Group/Ad 管理
+      - 素材上传和管理
+      - 受众定向
+      - 报表查询
+      - Spark Ads（原生内容推广）
+      - 产品目录管理
+    when_to_use:
+      - TikTok信息流广告投放
+      - 推广TikTok Shop产品
+      - 年轻用户群体触达
+    limits:
+      - API文档质量一般
+      - 部分功能地区限制
+    docs: https://business-api.tiktok.com/portal/docs
+
+  - name: Microsoft Advertising CLI
+    id: microsoft-ads
+    what: Bing/Microsoft广告API（Python SDK）
+    install: pip install bingads
+    auth:
+      required: true
+      method: oauth
+      env_vars:
+        - BING_ADS_CLIENT_ID
+        - BING_ADS_DEVELOPER_TOKEN
+        - BING_ADS_REFRESH_TOKEN
+      how_to_get: |
+        1. ads.microsoft.com 注册
+        2. developers.ads.microsoft.com 获取开发者令牌
+        3. Azure AD注册App获取Client ID
+      verify: "能调用 GetUser 返回当前用户信息"
+    capabilities:
+      - 搜索广告Campaign管理
+      - 关键词和出价管理
+      - 受众网络广告
+      - 报表下载
+      - 从Google Ads导入Campaign
+    when_to_use:
+      - Bing搜索广告
+      - 覆盖Google以外的搜索流量
+      - 已有Google Ads想扩展渠道（可直接导入）
+    limits:
+      - 流量远小于Google
+      - API结构和Google类似但不通用
+      - SDK正在从SOAP迁移到REST（注意版本）
+    docs: https://learn.microsoft.com/en-us/advertising/guides/
+
+  - name: Google Ads MCP Server
+    id: google-ads-mcp
+    what: 社区MCP Server，让AI Agent直接操作Google Ads
+    install: |
+      git clone https://github.com/googleads/google-ads-mcp
+      # 也有 google-marketing-solutions/google_ads_mcp_server
+    auth:
+      required: true
+      method: oauth
+      env_vars:
+        - GOOGLE_ADS_DEVELOPER_TOKEN
+        - GOOGLE_ADS_CLIENT_ID
+        - GOOGLE_ADS_CLIENT_SECRET
+        - GOOGLE_ADS_REFRESH_TOKEN
+      how_to_get: "同 Google Ads API"
+    capabilities:
+      - 通过MCP协议暴露Google Ads操作
+      - AI Agent可以直接调用（无需写代码）
+      - Campaign/关键词/报表操作
+    when_to_use:
+      - 已有MCP兼容的AI Agent（Claude Code、Gemini CLI等）
+      - 想让AI直接管理Google广告
+    limits:
+      - 社区项目，稳定性待验证
+    docs: https://github.com/googleads/google-ads-mcp
+
+  - name: Viktor for Media Buyers
+    id: viktor
+    what: 在Slack中管理广告的AI助手，连接Google/Meta/TikTok
+    install: Slack App安装，无需本地CLI
+    auth:
+      required: true
+      method: oauth
+      setup: "通过Viktor的Slack App授权各广告平台"
+    capabilities:
+      - Slack中查看广告效果
+      - 自然语言调整出价和预算
+      - 跨平台广告数据汇总
+      - 异常告警
+    when_to_use:
+      - 团队在Slack协作，想在对话中管广告
+      - 不想写代码直接操作
+    limits:
+      - 依赖Slack
+      - 功能不如直接API灵活
+    docs: https://getviktor.com/
+
+domain_knowledge:
+  terminology:
+    CPC: Cost Per Click，单次点击费用
+    CPM: Cost Per Mille，千次展示费用
+    CPA: Cost Per Acquisition，单次获客费用
+    CTR: Click-Through Rate，点击率
+    CVR: Conversion Rate，转化率
+    ROAS: Return On Ad Spend，广告回报率 = 收入/广告花费
+    ACOS: Advertising Cost of Sales = 广告花费/收入（ROAS倒数）
+    Impression: 展示次数
+    Reach: 触达人数（去重）
+    Frequency: 频次 = 展示/触达
+    Creative: 广告素材
+    Audience: 受众/人群
+    Lookalike: 相似人群扩展
+    DPA: Dynamic Product Ads，动态产品广告
+    PMax: Performance Max，Google效果最大化广告
+    Bid: 出价
+    Budget: 预算
+
+  rules:
+    - ROAS低于目标时先看素材疲劳（Frequency>3考虑换素材）
+    - Google搜索广告出价调整幅度建议不超过20%/次
+    - Meta广告新素材需要至少$50-100测试预算才有统计意义
+    - 各平台报表数据口径不同，归因窗口不同（Google默认30天点击，Meta默认7天点击+1天浏览）
+    - 预算调整后需要24-48小时重新学习，期间效果波动正常
+    - A/B测试至少跑满7天或1000次展示
+
+  typical_workflows:
+    - name: 日常优化
+      steps: 拉昨日数据 → 看ROAS/CPA → 暂停差的素材/关键词 → 调整出价 → 加新素材
+      tools: [google-ads-api, meta-marketing-api, tiktok-ads-api]
+
+    - name: 新Campaign创建
+      steps: 确定目标/预算 → 选受众 → 上传素材 → 设置出价策略 → 开启 → 3天后首次优化
+      tools: [google-ads-api, meta-marketing-api]
+
+    - name: 跨平台报表
+      steps: 各平台拉数据 → 统一口径 → 生成对比报表 → 推送给老板
+      tools: [google-ads-api, meta-marketing-api, tiktok-ads-api, microsoft-ads]
