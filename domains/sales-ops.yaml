@@ -67,6 +67,33 @@ tools:
       - API限流 100次/10秒（Private App）
     docs: https://developers.hubspot.com/docs/api/overview
 
+
+  - name: Salesforce MCP Server
+    id: salesforce-mcp
+    what: 社区 MCP Server，AI Agent 直接操作 Salesforce CRM，339+ stars
+    install: |
+      git clone https://github.com/benitomartin/salesforce-mcp-server
+      pip install -r requirements.txt
+    auth:
+      required: true
+      method: oauth
+      env_vars:
+        - SF_ACCESS_TOKEN
+        - SF_INSTANCE_URL
+      how_to_get: "同 Salesforce CLI OAuth 流程"
+    capabilities:
+      - 通过 MCP 协议操作 Contacts/Opportunities/Leads
+      - SOQL 查询
+      - 记录 CRUD
+      - AI Agent 直接调用（无需写代码）
+    when_to_use:
+      - 已有 MCP 兼容的 AI Agent
+      - 想让 AI 直接操作 Salesforce
+    limits:
+      - 社区项目，功能覆盖不如官方 API 全
+      - 活跃维护中
+    docs: https://github.com/benitomartin/salesforce-mcp-server
+
   # ============================================================
   # 通讯触达
   # ============================================================
@@ -133,6 +160,63 @@ tools:
       - 免费版额度很少
       - 数据准确率约85-90%
     docs: https://apolloio.github.io/apollo-api-docs/
+
+
+  - name: Clearbit API
+    id: clearbit-api
+    what: 公司信息补全和富化（Enrichment），自动填充公司规模/行业/技术栈等
+    install: pip install clearbit
+    auth:
+      required: true
+      method: api_key
+      env_vars:
+        - CLEARBIT_API_KEY
+      how_to_get: "clearbit.com 注册获取（已被 HubSpot 收购，部分功能免费）"
+    capabilities:
+      - 公司信息补全（规模/行业/融资/技术栈/社交媒体）
+      - 联系人信息补全（职位/LinkedIn/邮箱）
+      - 公司搜索（按条件筛选目标公司）
+      - 网站访客识别（Reveal）
+    when_to_use:
+      - CRM 数据补全（线索进来后自动填字段）
+      - 判断 ICP 匹配度
+      - 配合 Apollo 做更精准的目标筛选
+    limits:
+      - HubSpot 收购后免费额度有限
+      - 主要覆盖欧美公司
+    docs: https://dashboard.clearbit.com/docs
+
+  - name: LinkedIn Sales Navigator API
+    id: linkedin-sales-nav
+    what: LinkedIn 销售导航器，精准找决策人和目标客户
+    install: 无CLI，HTTP API（需企业版订阅 + 开发者申请）
+    auth:
+      required: true
+      method: oauth
+      env_vars:
+        - LINKEDIN_CLIENT_ID
+        - LINKEDIN_CLIENT_SECRET
+        - LINKEDIN_ACCESS_TOKEN
+      how_to_get: |
+        1. developer.linkedin.com 创建 App
+        2. 申请 Sales Navigator API 权限（需企业版）
+        3. OAuth 2.0 授权获取 Access Token
+      pricing: "Sales Navigator Core $99/月起，API 需企业级"
+    capabilities:
+      - 高级人脉搜索（按职位/公司/行业/地区）
+      - 目标客户列表管理
+      - InMail 消息
+      - 查看目标客户的动态和互动
+      - CRM 同步（Salesforce/HubSpot）
+    when_to_use:
+      - 找高管/决策人的联系方式和背景
+      - 判断目标客户的兴趣和近期动态
+      - 配合 Apollo 做多渠道线索挖掘
+    limits:
+      - API 访问门槛高（需企业版 + 开发者审批）
+      - 限流较严
+      - 大部分操作建议浏览器自动化
+    docs: https://learn.microsoft.com/en-us/linkedin/sales/
 
   # ============================================================
   # 序列化触达

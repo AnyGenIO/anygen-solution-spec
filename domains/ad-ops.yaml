@@ -171,6 +171,58 @@ tools:
       - 社区项目，稳定性待验证
     docs: https://github.com/googleads/google-ads-mcp
 
+
+  - name: Google Ads + GA4 MCP (带安全护栏)
+    id: google-ads-ga4-mcp-safe
+    what: Google Ads + Google Analytics 4 MCP Server，内置防意外花费护栏，62 stars
+    install: |
+      git clone https://github.com/nicholasgriffintn/google-ads-mcp
+      pip install -r requirements.txt
+    auth:
+      required: true
+      method: oauth
+      env_vars:
+        - GOOGLE_ADS_DEVELOPER_TOKEN
+        - GOOGLE_ADS_CLIENT_ID
+        - GOOGLE_ADS_CLIENT_SECRET
+        - GOOGLE_ADS_REFRESH_TOKEN
+      how_to_get: "同 Google Ads API"
+    capabilities:
+      - Google Ads 操作（含预算修改安全护栏）
+      - GA4 数据查询和分析
+      - 防止 AI 意外大额花费（护栏机制）
+      - Campaign/关键词/报表操作
+    when_to_use:
+      - 想让 AI 管理 Google 广告但担心失控
+      - 需要同时分析 GA4 用户行为数据
+      - 安全第一的广告自动化场景
+    limits:
+      - 社区项目
+      - GA4 数据有延迟
+    docs: https://github.com/nicholasgriffintn/google-ads-mcp
+
+  - name: Synter
+    id: synter
+    what: 多平台广告管理 SaaS，连接 10+ 广告平台，跨平台报表和优化
+    install: Web 平台，无 CLI（synter.io）
+    auth:
+      required: true
+      method: oauth
+      setup: "通过 Synter Web 界面授权各广告平台"
+      pricing: "$199/月起"
+    capabilities:
+      - 10+ 广告平台统一管理（Google/Meta/TikTok/Amazon/Pinterest等）
+      - 跨平台报表和数据汇总
+      - 自动优化规则
+      - 预算分配建议
+    when_to_use:
+      - 需要跨 10+ 平台统一管理广告
+      - 跨平台效果对比和预算分配
+    limits:
+      - SaaS 产品，无开放 API
+      - 付费 $199/月起
+    docs: https://synter.io/
+
   - name: Viktor for Media Buyers
     id: viktor
     what: 在Slack中管理广告的AI助手，连接Google/Meta/TikTok

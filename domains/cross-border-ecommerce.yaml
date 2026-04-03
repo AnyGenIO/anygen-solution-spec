@@ -36,6 +36,29 @@ tools:
       - GraphQL 1000 cost点/秒
     docs: https://shopify.dev/docs/api/shopify-cli
 
+
+  - name: Shopify MCP Server (官方)
+    id: shopify-mcp
+    what: Shopify 官方 MCP Server，AI Agent 直接操作 Shopify 店铺
+    install: npx @shopify/dev-mcp@latest
+    auth:
+      required: true
+      method: oauth
+      setup: 通过 MCP 协议授权 Shopify 店铺
+      how_to_get: "同 Shopify CLI，partners.shopify.com 获取凭证"
+    capabilities:
+      - 通过 MCP 协议暴露 Shopify 全部管理操作
+      - AI Agent 可直接调用（无需写代码）
+      - 产品/订单/库存/主题管理
+      - 与 Claude Code、Gemini CLI 等 MCP 客户端兼容
+    when_to_use:
+      - 已有 MCP 兼容的 AI Agent
+      - 想让 AI 直接管理 Shopify 店铺
+      - 比 CLI 更适合 Agent 场景
+    limits:
+      - 官方维护，功能覆盖持续扩展中
+    docs: https://github.com/Shopify/dev-mcp
+
   - name: Amazon SP-API
     id: amazon-sp-api
     what: 亚马逊卖家官方API的Python SDK，管理listing、订单、库存、广告
