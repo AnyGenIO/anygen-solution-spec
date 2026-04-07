@@ -2,6 +2,17 @@
 
 > 让 AI 读懂每个行业该用什么工具、怎么装、怎么配、怎么串
 
+## OpenClaw Skill 包
+
+这是一个标准的 OpenClaw Skill 包，clone 到 skills 目录即可使用：
+
+```bash
+# 安装方式
+git clone https://github.com/AnyGenIO/anygen-solution-spec.git ~/.openclaw/agents/main/skills/anygen-solution-spec
+```
+
+覆盖 **7 个行业、80+ 工具**，支持 Progressive Disclosure（按需加载详细文档）。
+
 ## 问题
 
 世界上有成千上万的 CLI/API 工具，但 AI 不知道：
@@ -66,17 +77,23 @@ tools:
 
 ```
 anygen-solution-spec/
-├── README.md
-├── domains/                       # 按行业组织，一个行业一个文件
+├── SKILL.md                       # Skill 主文件（行业路由 + 按需加载逻辑）
+├── README.md                      # GitHub 展示用
+├── references/                    # Skill references 目录
+│   ├── sales-ops.md              # 工具索引（45个工具）
+│   ├── cross-border-ecommerce.md # 工具索引（9个工具）
+│   ├── ad-ops.md                 # 工具索引
+│   ├── investment-research.md
+│   ├── customer-support.md
+│   ├── legal-assistant.md
+│   ├── tax-finance.md
+│   ├── docs-sales-ops/           # 45个工具详细文档
+│   └── docs-cross-border-ecommerce/  # 9个工具详细文档
+├── domains/                       # 原始 YAML 数据源
 │   ├── cross-border-ecommerce.yaml
 │   ├── sales-ops.yaml
-│   ├── ad-ops.yaml
-│   ├── investment-research.yaml
-│   ├── customer-support.yaml
-│   ├── legal-assistant.yaml
-│   └── tax-finance.yaml
+│   └── ...
 └── spec/                          # 规范和示例
-    └── examples/
 ```
 
 ## 如何贡献
