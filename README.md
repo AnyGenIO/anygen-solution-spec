@@ -11,7 +11,7 @@
 git clone https://github.com/AnyGenIO/anygen-solution-spec.git ~/.openclaw/agents/main/skills/anygen-solution-spec
 ```
 
-覆盖 **7 个行业、80+ 工具**，支持 Progressive Disclosure（按需加载详细文档）。
+覆盖 **4 个行业、34 个工具**（严格按 Connector 优先级表筛选 Tier1-4 P0），支持 Progressive Disclosure（按需加载详细文档）。
 
 ## 问题
 
@@ -35,17 +35,14 @@ git clone https://github.com/AnyGenIO/anygen-solution-spec.git ~/.openclaw/agent
 - **业务规则** — 合规要求、最佳实践
 - **典型工作流** — 真实场景的工具编排步骤
 
-## 已覆盖行业
+## 已覆盖行业（Tier1-4 P0）
 
-| 行业 | 文件 | 工具数 |
-|------|------|--------|
-| 跨境电商 | [`domains/cross-border-ecommerce.yaml`](domains/cross-border-ecommerce.yaml) | 多平台上架、订单、广告、竞品、库存 |
-| 销售运营 | [`domains/sales-ops.yaml`](domains/sales-ops.yaml) | CRM、通讯触达、线索获取、合同签署 |
-| 广告投放 | [`domains/ad-ops.yaml`](domains/ad-ops.yaml) | Google/Meta/TikTok/Microsoft 广告 |
-| 投研金融 | [`domains/investment-research.yaml`](domains/investment-research.yaml) | 行情数据、财务分析、组合监控 |
-| 客服运营 | [`domains/customer-support.yaml`](domains/customer-support.yaml) | 工单、沟通、退款、物流查询 |
-| 法务助理 | [`domains/legal-assistant.yaml`](domains/legal-assistant.yaml) | 合同审查、法规查询、电子签约 |
-| 税务财务 | [`domains/tax-finance.yaml`](domains/tax-finance.yaml) | 发票管理、记账对账、VAT 合规 |
+| 行业 | 文件 | 工具数 | 核心工具 |
+|------|------|--------|---------|
+| 销售运营 | [`domains/sales-ops.yaml`](domains/sales-ops.yaml) | 20 | Salesforce/HubSpot/Pipedrive/Apollo/Gong/Stripe/DocuSign/Twilio |
+| 广告投放 | [`domains/ad-ops.yaml`](domains/ad-ops.yaml) | 4 | Google Ads/Meta/TikTok/Bright Data |
+| 跨境电商 | [`domains/cross-border-ecommerce.yaml`](domains/cross-border-ecommerce.yaml) | 4 | Shopify/Amazon SP-API/TikTok Shop/Square |
+| 视频内容 | [`domains/video-content.yaml`](domains/video-content.yaml) | 6 | FFmpeg/Whisper/ElevenLabs/MoneyPrinterTurbo/yt-dlp/Runway |
 
 ## 快速上手
 
@@ -78,22 +75,21 @@ tools:
 ```
 anygen-solution-spec/
 ├── SKILL.md                       # Skill 主文件（行业路由 + 按需加载逻辑）
-├── README.md                      # GitHub 展示用
+├── README.md                      # 项目说明
 ├── references/                    # Skill references 目录
-│   ├── sales-ops.md              # 工具索引（45个工具）
-│   ├── cross-border-ecommerce.md # 工具索引（9个工具）
-│   ├── ad-ops.md                 # 工具索引
-│   ├── investment-research.md
-│   ├── customer-support.md
-│   ├── legal-assistant.md
-│   ├── tax-finance.md
-│   ├── docs-sales-ops/           # 45个工具详细文档
-│   └── docs-cross-border-ecommerce/  # 9个工具详细文档
-├── domains/                       # 原始 YAML 数据源
-│   ├── cross-border-ecommerce.yaml
-│   ├── sales-ops.yaml
-│   └── ...
-└── spec/                          # 规范和示例
+│   ├── sales-ops.md              # 工具索引（20个工具）
+│   ├── ad-ops.md                 # 工具索引（4个工具）
+│   ├── cross-border-ecommerce.md # 工具索引（4个工具）
+│   ├── video-content.md          # 工具索引（6个工具）
+│   ├── docs-sales-ops/           # 20个工具详细文档
+│   ├── docs-ad-ops/              # 4个工具详细文档
+│   ├── docs-cross-border-ecommerce/  # 4个工具详细文档
+│   └── docs-video-content/       # 6个工具详细文档
+└── domains/                       # 原始 YAML 数据源
+    ├── sales-ops.yaml
+    ├── ad-ops.yaml
+    ├── cross-border-ecommerce.yaml
+    └── video-content.yaml
 ```
 
 ## 如何贡献
