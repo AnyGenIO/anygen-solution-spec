@@ -9,6 +9,245 @@ tools:
   # CRM 平台
   # ============================================================
 
+  - name: Pipedrive API
+    id: pipedrive-api
+    what: 销售管线管理CRM，专注可视化Pipeline和简洁易用（中小团队首选）
+    install: 无CLI，HTTP API调用
+    auth:
+      required: true
+      method: api_key
+      env_vars:
+        - PIPEDRIVE_API_TOKEN
+      how_to_get: "Pipedrive → Settings → Personal preferences → API → Generate new token"
+      pricing: "Essential $14/用户/月 / Advanced $34/用户/月 / Professional $49/用户/月 / Enterprise $99/用户/月"
+    capabilities:
+      # Deal和Pipeline管理
+      - Deal CRUD（创建/更新/移动Stage）
+      - 自定义Pipeline和Stage配置
+      - Deal可视化看板（拖拽移动Stage）
+      - Deal概率和加权预测
+      - 活动关联（Email/Call/Meeting记录）
+      # 联系人和组织
+      - Person和Organization管理
+      - 自定义字段
+      - 数据去重
+      # 活动和跟进
+      - Activity计划和提醒
+      - 邮件集成（Gmail/Outlook双向同步）
+      - 通话记录
+      # 自动化
+      - Workflow自动化（触发器-动作，需Professional版）
+      - 邮件模板和序列（需Professional版）
+      # 报表和分析
+      - 销售报表和Dashboard
+      - 活动分析（邮件/电话/会议统计）
+      - 团队表现对比
+      # 集成
+      - Zapier/Make集成（2000+应用）
+      - Marketplace（100+原生集成）
+    when_to_use:
+      - 中小型销售团队（<100人）不想Salesforce的复杂度
+      - 重视Pipeline可视化和直观操作
+      - 快速上手CRM（培训成本低）
+      - 预算有限但需要完整功能
+    limits:
+      - API限流 100次/10秒（企业版更高）
+      - 高级自动化需Professional版以上
+      - 企业级功能不如Salesforce/Dynamics（无CPQ/高级预测）
+      - 报表自定义能力有限
+    docs: https://developers.pipedrive.com/docs/api/v1
+
+  - name: Zoho CRM API
+    id: zoho-crm-api
+    what: 性价比CRM，支持Deluge脚本深度定制，功能全但价格比Salesforce便宜50%+
+    install: 无CLI，HTTP API调用
+    auth:
+      required: true
+      method: oauth
+      env_vars:
+        - ZOHO_CLIENT_ID
+        - ZOHO_CLIENT_SECRET
+        - ZOHO_REFRESH_TOKEN
+      how_to_get: |
+        1. api-console.zoho.com 注册开发者
+        2. 创建 Server-based Application
+        3. 获取 Client ID/Secret
+        4. OAuth授权获取 Refresh Token
+      pricing: "Standard $14/用户/月 / Professional $23/用户/月 / Enterprise $40/用户/月 / Ultimate $52/用户/月（比Salesforce便宜一半）"
+    capabilities:
+      # CRM核心
+      - Lead/Contact/Account/Deal/Task全对象CRUD
+      - 自定义模块和字段
+      - Blueprint（可视化销售流程，类似Salesforce Flow）
+      - 销售预测和配额管理
+      - Territory管理（区域分配）
+      # 自动化和AI
+      - Workflow自动化（邮件/任务/字段更新/Webhook）
+      - Deluge脚本（自定义函数和业务逻辑，类似Apex）
+      - Zia AI（Lead/Deal评分、异常检测、推荐最佳时机）
+      - Canvas（自定义UI界面）
+      # 多渠道触达
+      - 邮件集成（Gmail/Outlook/Zoho Mail）
+      - 电话集成（RingCentral/Twilio）
+      - 社交媒体集成（Facebook/Twitter/LinkedIn）
+      - 实时聊天和邮件营销（需Zoho One套件）
+      # 报表和BI
+      - 高级报表和Dashboard
+      - Anomaly Detection（异常预警）
+      - 目标vs实际对比
+      # 集成生态
+      - Zoho One生态（Office/Books/Desk等40+应用）
+      - Zapier/Integromat集成
+      - Marketplace（300+扩展）
+    when_to_use:
+      - 预算有限但需要企业级CRM功能
+      - 需要深度定制（Deluge脚本能力强）
+      - 已用Zoho其他产品（Books会计/Desk客服）
+      - 重视性价比（功能90%但价格50%）
+    limits:
+      - API限流 10次/10秒（默认），Enterprise版可提升
+      - 用户体验不如Salesforce流畅（UI稍显陈旧）
+      - Deluge学习曲线陡
+      - 主要面向中小企业，超大企业生态不如Salesforce
+    docs: https://www.zoho.com/crm/developer/docs/api/v7/
+
+  - name: Freshsales API
+    id: freshsales-api
+    what: AI驱动的轻量级CRM，Freshworks旗下（客服Freshdesk同厂），侧重AI Lead评分和内置电话
+    install: 无CLI，HTTP API调用
+    auth:
+      required: true
+      method: api_key
+      env_vars:
+        - FRESHSALES_API_KEY
+        - FRESHSALES_DOMAIN  # 如 yourcompany.freshsales.io
+      how_to_get: "Freshsales → Settings → API Settings → Generate API Key"
+      pricing: "Growth $15/用户/月 / Pro $39/用户/月 / Enterprise $69/用户/月"
+    capabilities:
+      # 核心CRM
+      - Lead/Contact/Account/Deal管理
+      - 自定义字段和模块
+      - 销售Pipeline可视化
+      # AI功能（Freddy AI）
+      - AI Lead评分（预测成单概率）
+      - Deal智能提醒（风险预警/下一步建议）
+      - 邮件自动回复建议
+      - 最佳联系时间推荐
+      # 内置通讯
+      - 内置Cloud Phone（拨号器+通话录音，需额外付费）
+      - 邮件集成（Gmail/Outlook双向同步）
+      - 邮件追踪（打开/点击）
+      # 自动化
+      - Workflow自动化（触发器-动作）
+      - 邮件序列（Sales Sequences）
+      - 自动分配规则
+      # 集成
+      - Freshdesk客服系统无缝联动
+      - Zapier/Segment集成
+      - Marketplace（50+原生集成）
+    when_to_use:
+      - 小型销售团队（<50人）快速上手
+      - 重视AI辅助（Lead评分/下一步建议）
+      - 已用Freshdesk做客服，想打通Sales-Service数据
+      - 需要内置电话功能（不想单独买Twilio/Aircall）
+    limits:
+      - API限流 100次/分钟
+      - 企业级功能有限（无CPQ/高级预测/Territory管理）
+      - 集成生态不如Salesforce/HubSpot
+      - 主要面向中小团队
+    docs: https://developers.freshworks.com/crm/api/
+
+  - name: Twenty
+    id: twenty
+    what: 开源CRM（Salesforce替代），GraphQL API + CLI，可自托管或云服务，10k+ stars
+    install: |
+      # 自托管
+      git clone https://github.com/twentyhq/twenty
+      docker-compose up
+      # 或使用云服务 app.twenty.com（免费版）
+    auth:
+      required: true
+      method: api_key
+      env_vars:
+        - TWENTY_API_KEY
+      how_to_get: "Twenty → Settings → Developers → API Keys → Generate"
+      pricing: "开源免费自托管 / 云服务 $0（免费版）/ $9/用户/月（Pro）/ $39/用户/月（Enterprise）"
+    capabilities:
+      # 核心CRM（完全可定制）
+      - 自定义对象和关系（GraphQL schema驱动）
+      - People/Companies/Opportunities/Tasks管理
+      - 灵活数据模型（无预设限制）
+      - 视图和过滤器自定义
+      # GraphQL API
+      - 全功能GraphQL API（查询/变更/订阅）
+      - Webhooks（事件驱动集成）
+      - 批量操作
+      # 自动化（开发中）
+      - Workflow自动化（Roadmap中）
+      - 与n8n/Zapier集成
+      # 开源生态
+      - 可自定义UI（React前端开源）
+      - 插件系统（扩展功能）
+      - 数据完全掌控（自托管无vendor lock-in）
+    when_to_use:
+      - 不想被商业CRM绑架（数据和定制自由）
+      - 需要深度定制CRM（可改源码）
+      - 预算极低或零预算（自托管免费）
+      - 技术团队有能力维护开源系统
+      - 数据隐私敏感（必须自托管）
+    limits:
+      - 相对年轻项目（2023年启动），功能还在快速迭代
+      - 开箱即用功能不如成熟商业CRM（需自己配置）
+      - 自托管需要运维能力
+      - 生态和集成需要自己开发
+      - 云服务目前功能有限
+    docs: https://twenty.com/developers
+
+  - name: Attio API
+    id: attio-api
+    what: 新一代灵活CRM，强大的数据模型和协作，适合现代SaaS团队（类Notion的CRM体验）
+    install: 无CLI，HTTP API调用
+    auth:
+      required: true
+      method: api_key
+      env_vars:
+        - ATTIO_API_KEY
+      how_to_get: "Attio → Settings → Developers → API Keys → Create"
+      pricing: "Free版（10用户）/ Plus $29/用户/月 / Pro $59/用户/月 / Enterprise定制"
+    capabilities:
+      # 灵活数据模型
+      - 自定义对象和属性（类Notion Database）
+      - 多对多关系（不局限于传统Lead→Account层级）
+      - 灵活视图（List/Board/Timeline）
+      - 高级过滤和分组
+      # CRM核心
+      - People/Companies/Deals管理
+      - 邮件集成（Gmail/Outlook双向同步）
+      - 邮件追踪（打开/点击/回复）
+      - 任务和提醒
+      # 协作
+      - 实时协作（多人同时编辑，类Google Docs）
+      - @提及和评论
+      - 活动时间线（所有互动历史）
+      # 自动化
+      - 数据自动富化（从邮件/LinkedIn自动提取信息）
+      - Workflow自动化（字段更新/任务分配）
+      # API和集成
+      - REST API（全功能）
+      - Webhooks（实时事件）
+      - Zapier/Make集成
+    when_to_use:
+      - 现代SaaS团队追求灵活性和协作
+      - 传统CRM（Salesforce）太死板，想要自定义数据模型
+      - 重视团队实时协作（Sales/CS/Product跨团队使用）
+      - 中小型团队快速上手（UI直观类Notion）
+    limits:
+      - 相对新（2019年成立），企业级功能还在完善
+      - 生态和集成不如Salesforce/HubSpot
+      - 高级报表和预测功能有限
+      - API限流 60次/分钟（免费版）/600次/分钟（付费版）
+    docs: https://developers.attio.com/
+
   - name: Salesforce CLI (sf)
     id: salesforce-cli
     what: Salesforce 官方命令行，管理org/数据/部署，业务操作走REST API（覆盖Sales/Service/Marketing Cloud全生态）
@@ -270,6 +509,37 @@ tools:
       - 主要覆盖欧美公司
     docs: https://dashboard.clearbit.com/docs
 
+  - name: Lusha API
+    id: lusha-api
+    what: 联系人数据平台，快速获取邮箱和电话号码，Chrome插件+API组合使用
+    install: 无CLI，HTTP API调用
+    auth:
+      required: true
+      method: api_key
+      env_vars:
+        - LUSHA_API_KEY
+      how_to_get: "lusha.com → Settings → API → Generate API Key"
+      pricing: "Free版 5 credits/月 / Pro $29/用户/月 / Premium $51/用户/月 / Scale需联系"
+    capabilities:
+      - 联系人邮箱查询（B2B邮箱验证准确率90%+）
+      - 直线电话号码获取
+      - 公司信息补全（规模/行业/地址/社交媒体）
+      - 批量查询（Excel上传→批量返回结果）
+      - Chrome插件（LinkedIn上直接显示联系方式）
+      - 邮箱验证（Deliverability检查）
+      - CRM集成（Salesforce/HubSpot自动同步）
+    when_to_use:
+      - 在LinkedIn找到目标人后快速获取联系方式
+      - 批量获取联系人列表的邮箱/电话
+      - 配合Apollo做补充（覆盖不同数据源）
+      - 验证邮箱有效性（发邮件前去掉无效邮箱）
+    limits:
+      - 免费版仅5 credits/月（1 credit=1次查询）
+      - 主要覆盖北美/欧洲数据，亚洲数据较弱
+      - 手机号码准确率低于邮箱（约70%）
+      - API限流 60次/分钟
+    docs: https://www.lusha.com/docs/
+
   - name: LinkedIn Sales Navigator API
     id: linkedin-sales-nav
     what: LinkedIn 销售导航器，精准找决策人和目标客户
@@ -358,6 +628,54 @@ tools:
     limits:
       - API限流 600次/分钟
     docs: https://developers.salesloft.com/docs/api/
+
+  - name: Lemlist API
+    id: lemlist-api
+    what: 冷邮件自动化平台，专注个性化序列触达和高送达率（比Outreach更轻量，更适合Outbound）
+    install: 无CLI，HTTP API调用
+    auth:
+      required: true
+      method: api_key
+      env_vars:
+        - LEMLIST_API_KEY
+      how_to_get: "app.lemlist.com → Settings → Integrations → API → Generate"
+      pricing: "Email Outreach $59/用户/月 / Sales Engagement $99/用户/月 / Multichannel Expert $159/用户/月"
+    capabilities:
+      # 邮件序列
+      - 多步骤邮件序列（Campaign）
+      - 个性化变量（姓名/公司/自定义字段）
+      - 动态图片（嵌入联系人姓名的截图）
+      - A/B测试（主题行/正文）
+      - 发送时间优化（按时区/收件人习惯）
+      # 送达率优化
+      - 邮箱预热（Warm-up，逐步提升发送量）
+      - SPF/DKIM/DMARC检查
+      - 垃圾邮件检测（发送前测试）
+      - 多邮箱轮换（避免单个邮箱超限）
+      - 自动退订处理（CAN-SPAM合规）
+      # 多渠道触达（高级版）
+      - LinkedIn自动化（访问Profile/发InMail/需Chrome插件）
+      - 电话任务提醒
+      # 数据和集成
+      - Lead列表管理
+      - CRM集成（HubSpot/Salesforce/Pipedrive）
+      - Webhook事件（邮件打开/点击/回复）
+      - Zapier集成
+      # 分析
+      - 打开率/点击率/回复率
+      - 每步效果分析
+      - 不合格Lead自动移除
+    when_to_use:
+      - SDR团队做大规模Outbound冷邮件
+      - 重视送达率和邮箱健康度（不想进垃圾箱）
+      - 需要个性化但预算不够Outreach/Salesloft
+      - 配合LinkedIn做多渠道触达
+    limits:
+      - API限流 120次/分钟
+      - LinkedIn自动化有被封号风险（违反LinkedIn ToS）
+      - 免费版不存在，必须付费
+      - 主要适合Outbound场景，Inbound跟进用HubSpot/Outreach更好
+    docs: https://developer.lemlist.com/
 
   # ============================================================
   # 合同签署
