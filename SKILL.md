@@ -1,6 +1,6 @@
 ---
 name: industry-tools
-description: "行业工具说明书 — 列出并指导使用各行业的 CLI/API 工具。当用户提到销售运营、跨境电商、广告投放、视频内容等行业场景，或询问某个行业有哪些工具、怎么安装、怎么认证时使用。"
+description: "行业工具说明书 — Connector 层。覆盖销售运营、广告投放、跨境电商、视频内容四个行业的 26 个工具。Data 数据源见 anygen-solution-hub。"
 ---
 
 # Industry Tools — 行业工具说明书
@@ -12,14 +12,25 @@ description: "行业工具说明书 — 列出并指导使用各行业的 CLI/AP
 3. **展示详情** — 读 `references/docs-<domain>/<tool-id>.md` 展示安装/认证/能力
 4. **指导操作** — 引导安装、配置密钥、验证连通
 
-## 支持的行业（Tier1-4 P0）
+## 支持的行业和文档详细度
 
-| 行业 | 索引 | 详情目录 | 工具数 |
-|------|------|----------|--------|
-| 销售运营 | `references/sales-ops.md` | `references/docs-sales-ops/` | 20 |
-| 广告投放 | `references/ad-ops.md` | `references/docs-ad-ops/` | 4 |
-| 跨境电商 | `references/cross-border-ecommerce.md` | `references/docs-cross-border-ecommerce/` | 4 |
-| 视频内容 | `references/video-content.md` | `references/docs-video-content/` | 6 |
+| 行业 | 索引 | 详情目录 | 工具数 | 文档详细度 |
+|------|------|----------|--------|------------|
+| 销售运营 | `references/sales-ops.md` | `references/docs-sales-ops/` | 13 | 详细版(6) + 标准版(7) |
+| 广告投放 | `references/ad-ops.md` | `references/docs-ad-ops/` | 3 | 详细版(3) |
+| 跨境电商 | `references/cross-border-ecommerce.md` | `references/docs-cross-border-ecommerce/` | 4 | 详细版(3) + 标准版(1) |
+| 视频内容 | `references/video-content.md` | `references/docs-video-content/` | 6 | 精简版(4) + 标准版(2) |
+
+### 文档详细度说明
+
+**精简版（lite）** — AI 内置知识强，Spec 只补场景和注意事项（<30 行）
+- FFmpeg, Whisper, yt-dlp, MoneyPrinterTurbo
+
+**标准版（standard）** — AI 基本懂但认证要准确（60-100 行）
+- Stripe, Twilio, ElevenLabs, Square, Pipedrive, Freshsales, Twenty, Attio, Salesloft, Lemlist, Runway
+
+**详细版（detailed）** — 复杂/易混淆，需要完整引导（150+ 行）
+- Salesforce, HubSpot, Shopify, Amazon SP-API, Google Ads, Meta Marketing, TikTok Marketing, TikTok Shop, Zoho CRM, Outreach, DocuSign
 
 ## 行业路由关键词
 
@@ -53,6 +64,19 @@ read("references/docs-sales-ops/salesforce-cli.md")
 1. 给安装命令
 2. 引导认证（环境变量 + 获取步骤）
 3. 验证连通性
+
+## Connector 层 vs Data 层
+
+本项目是 **Connector 层**（业务操作工具），配套项目 [anygen-solution-hub](https://github.com/AnyGenIO/anygen-solution-hub) 是 **Data 层**（原始数据源）。
+
+| 层次 | 定位 | 示例 | 何时使用 |
+|------|------|------|----------|
+| **Connector 层**（本项目） | 业务操作工具 | Salesforce、HubSpot、Shopify、Stripe | 需要执行业务操作（创建订单、发邮件、投放广告） |
+| **Data 层**（anygen-solution-hub） | 原始数据源 | Apollo.io、ZoomInfo、Gong、Bright Data | 需要查询原始数据（联系人库、通话录音、竞品广告） |
+
+**典型组合：**
+- 销售线索拓展 → Data: Apollo 搜索联系人 → Connector: Salesforce 创建 Lead
+- 广告投放优化 → Data: Bright Data 采集竞品素材 → Connector: Google Ads 创建广告
 
 ## 原则
 
