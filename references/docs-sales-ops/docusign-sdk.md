@@ -1,3 +1,5 @@
+<!-- doc-level: detailed -->
+
 # DocuSign SDK
 
 > 电子签名平台SDK,发送合同/收集签名(无官方CLI)

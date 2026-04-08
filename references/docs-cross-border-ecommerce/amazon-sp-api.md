@@ -1,3 +1,5 @@
+<!-- doc-level: detailed -->
+
 # Amazon SP-API
 
 > 亚马逊卖家官方API的Python SDK,管理listing、订单、库存、广告

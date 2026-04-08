@@ -1,3 +1,5 @@
+<!-- doc-level: detailed -->
+
 # Google Ads API
 
 > Google 官方广告 API，管理搜索/展示/视频广告

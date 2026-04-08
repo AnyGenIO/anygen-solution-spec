@@ -1,3 +1,5 @@
+<!-- doc-level: detailed -->
+
 # TikTok Shop Open API
 
 > TikTok小店官方API,管理产品、订单、物流

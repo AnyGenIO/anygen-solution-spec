@@ -1,3 +1,5 @@
+<!-- doc-level: detailed -->
+
 # Zoho CRM API
 
 > 性价比CRM,支持Deluge脚本深度定制,功能全但价格比Salesforce便宜50%+

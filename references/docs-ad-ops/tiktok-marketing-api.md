@@ -1,3 +1,5 @@
+<!-- doc-level: detailed -->
+
 # TikTok Marketing API
 
 > TikTok 官方营销 API，管理 TikTok 广告投放
