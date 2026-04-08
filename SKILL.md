@@ -16,7 +16,7 @@ description: "行业工具说明书 — Connector 层。覆盖销售运营、广
 
 | 行业 | 索引 | 详情目录 | 工具数 | 文档详细度 |
 |------|------|----------|--------|------------|
-| 销售运营 | `references/sales-ops.md` | `references/docs-sales-ops/` | 13 | 详细版(6) + 标准版(7) |
+| 销售运营 | `references/sales-ops.md` | `references/docs-sales-ops/` | 13 | 详细版(7) + 标准版(6) |
 | 广告投放 | `references/ad-ops.md` | `references/docs-ad-ops/` | 3 | 详细版(3) |
 | 跨境电商 | `references/cross-border-ecommerce.md` | `references/docs-cross-border-ecommerce/` | 4 | 详细版(3) + 标准版(1) |
 | 视频内容 | `references/video-content.md` | `references/docs-video-content/` | 6 | 精简版(4) + 标准版(2) |
